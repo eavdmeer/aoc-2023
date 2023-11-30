@@ -1,8 +1,8 @@
 {
-  "name": "aoc-2022",
+  "name": "aoc-2023",
   "version": "1.0.0",
   "type": "module",
-  "description": "This small repo contains my NodeJS solutions to the Advent of Code challenge of 2022.",
+  "description": "This small repo contains my NodeJS solutions to the Advent of Code challenge of 2023.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eavdmeer/aoc-2022.git"
+    "url": "git+https://github.com/eavdmeer/aoc-2023.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/eavdmeer/aoc-2022/issues"
+    "url": "https://github.com/eavdmeer/aoc-2023/issues"
   },
-  "homepage": "https://github.com/eavdmeer/aoc-2022#readme",
+  "homepage": "https://github.com/eavdmeer/aoc-2023#readme",
   "dependencies": {
     "@datastructures-js/priority-queue": "^6.1.4",
     "debug": "^4.3.4",
