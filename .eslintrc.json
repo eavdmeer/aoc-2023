@@ -1,4 +1,5 @@
 {
+  "root": true,
   "plugins": [
     "jest"
   ],
@@ -153,7 +154,7 @@
     "no-script-url": "error",
     "no-self-compare": "error",
     "no-sequences": "error",
-    "no-shadow": [ "error", { "allow": [ "ev", "env", "err", "html", "i", "m", "op", "user" ] } ],
+    "no-shadow": [ "error", { "allow": [ "ev", "env", "err", "ex", "html", "i", "m", "op", "user" ] } ],
     "no-spaced-func": "error",
     "no-sync": "error",
     "no-tabs": "error",

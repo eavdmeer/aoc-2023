@@ -1,5 +1,5 @@
-/*
 import day01 from './day01/index.js';
+/*
 import day02 from './day02/index.js';
 import day03 from './day03/index.js';
 import day04 from './day04/index.js';
@@ -35,8 +35,8 @@ async function getResults()
     return v;
   };
   const result = [
-    /*
     await day01('day01/data.txt').then(report),
+    /*
     await day02('day02/data.txt').then(report),
     await day03('day03/data.txt').then(report),
     await day04('day04/data.txt').then(report),
