@@ -33,20 +33,18 @@ function firstLast(str)
   const search = [ ...Object.keys(map), ...Object.values(map) ];
 
   const first = {};
+  const last = {};
   search.forEach(v =>
   {
-    const idx = str.indexOf(v);
-    if (idx >= 0 && (first.idx === undefined || idx < first.idx))
+    let idx = str.indexOf(v);
+    if (idx < 0) { return; }
+    if (first.idx === undefined || idx < first.idx)
     {
       first.idx = idx;
       first.val = map[v] ?? v;
     }
-  });
-  const last = {};
-  search.forEach(v =>
-  {
-    const idx = str.lastIndexOf(v);
-    if (idx >= 0 && (last.idx === undefined || idx > last.idx))
+    idx = str.lastIndexOf(v);
+    if (last.idx === undefined || idx > last.idx)
     {
       last.idx = idx;
       last.val = map[v] ?? v;
