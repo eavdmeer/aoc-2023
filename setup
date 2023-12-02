@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 today=$(date +%d)
 day="${1-$today}"
-here="${0%/*}"
+here=$(readlink -f "${0%/*}")
 
 [ -n "$day" ] || {
   echo >&2 "Usage: ${0##*/} day"
@@ -18,13 +18,16 @@ target="day$day"
 echo "Setting up for day $day..."
 
 mkdir -p "$target" || exit 1
+cd "$target" || exit 1
 
 sarg="s/dayxx/day$day/; s/day: -1/day: $day/"
-sed "$sarg" "$here/skel/index.js" > "$target/index.js"
-touch "$target/example.txt" "$target/data.txt"
+sed "$sarg" "$here/skel/index.js" > index.js
+touch example1.txt example2.txt data.txt
 
-git add "$target/index.js" "$target/example.txt" "$target/data.txt"
+# git add  example1.txt example2.txt data.txt
 
-cd "$target" || exit 1
-gvim example.txt data.txt
-gvim index.js
+editor=gvim
+which "$editor" >& /dev/null || editor=mvim
+
+"$editor" -p example1.txt example2.txt data.txt
+"$editor" index.js

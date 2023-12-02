@@ -36,16 +36,18 @@ export default async function dayxx(target)
   debug('data', data);
 
   const part1 = solve1(data);
-  if (target.includes('example') && part1 !== 'todo')
+  const expect1 = 'todo';
+  if (target.includes('example1') && part1 !== expect1)
   {
-    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; 'todo'`);
+    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1}`);
   }
 
   const part2 = solve2(data);
-  if (target.includes('example') && part2 !== 'todo')
+  const expect2 = 'todo';
+  if (target.includes('example2') && part2 !== expect2)
   {
-    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; 'todo'`);
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
   }
 
-  return { day: -1, part1, part2, duration: Date.now() - start };
+  return { dayxx: -1, part1, part2, duration: Date.now() - start };
 }
