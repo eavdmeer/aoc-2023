@@ -81,5 +81,5 @@ export default async function day02(target)
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
   }
 
-  return { day: 2, part1, part2, duration: Date.now() - start };
+  return { day: 'day02', part1, part2, duration: Date.now() - start };
 }
