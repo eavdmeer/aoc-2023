@@ -72,22 +72,25 @@ export default async function day01(target)
   const data = buffer
     .toString()
     .trim()
-    .split(/\s*\n\s*/);
+    .split(/\s*\n\s*/)
+    .filter(v => v);
   /* eslint-enable no-shadow */
 
   debug('data', data);
 
   const part1 = solve1(data);
-  if (target.includes('example1') && part1 !== 142)
+  const expect1 = 142;
+  if (target.includes('example1') && part1 !== expect1)
   {
-    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; 142`);
+    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1}`);
   }
 
   const part2 = solve2(data);
+  const expect2 = 281;
   debug('part2', part2);
-  if (target.includes('example2') && part2 !== 281)
+  if (target.includes('example2') && part2 !== expect2)
   {
-    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; 281`);
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
   }
 
   return { day: 'day01', part1, part2, duration: Date.now() - start };
