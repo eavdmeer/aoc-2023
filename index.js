@@ -31,7 +31,7 @@ async function getResults()
   const report = v =>
   {
     console.log(
-      `day ${String(v.day).padStart(2, 0)} solved in ${v.duration} ms`);
+      `${v.day} solved in ${v.duration} ms`);
     return v;
   };
   const result = [
