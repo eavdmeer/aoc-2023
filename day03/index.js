@@ -3,7 +3,7 @@ import makeDebug from 'debug';
 
 const debug = makeDebug('day03');
 
-const useHyperNeutrino = true;
+const useHyperNeutrino = false;
 
 if (process.argv[2])
 {
@@ -54,9 +54,12 @@ function parseGrid(grid, symbolList)
       }
       else if (! /\d|\./.test(ch))
       {
-        if (symbolList && symbolList.includes(ch))
+        if (symbolList)
         {
-          symbols.push({ x, y });
+          if (symbolList.includes(ch))
+          {
+            symbols.push({ x, y });
+          }
         }
         else
         {
