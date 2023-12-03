@@ -3,6 +3,8 @@ import makeDebug from 'debug';
 
 const debug = makeDebug('day03');
 
+const useHyperNeutrino = true;
+
 if (process.argv[2])
 {
   day03(process.argv[2]).then(console.log);
@@ -24,7 +26,7 @@ function neighbors(yp, xp)
   return res;
 }
 
-function parseGrid(grid)
+function parseGrid(grid, symbolList)
 {
   const w = grid[0].length;
   const h = grid.length;
@@ -52,15 +54,135 @@ function parseGrid(grid)
       }
       else if (! /\d|\./.test(ch))
       {
-        symbols.push({ x, y });
+        if (symbolList && symbolList.includes(ch))
+        {
+          symbols.push({ x, y });
+        }
+        else
+        {
+          symbols.push({ x, y });
+        }
       }
     }
   }
   return { numbers, symbols };
 }
 
+function hyperNeutrino1(data)
+{
+  const grid = data.map(v => v.split(''));
+  const w = grid[0].length;
+  const h = grid.length;
+
+  const cs = new Set();
+
+  grid.forEach((row, r) =>
+  {
+    row.forEach((ch, c) =>
+    {
+      if (! isNaN(ch) || ch === '.') { return; }
+
+      [ r - 1, r, r + 1 ].forEach(cr =>
+      {
+        [ c - 1, c, c + 1 ].forEach(cc =>
+        {
+          if (cr < 0 || cr >= h || cc < 0 || cc >= w || isNaN(grid[cr][cc]))
+          {
+            return;
+          }
+          let nc = cc;
+          while (nc > 0 && ! isNaN(grid[cr][nc - 1]))
+          {
+            nc--;
+          }
+          cs.add(`${cr}:${nc}`);
+        });
+      });
+    });
+  });
+
+  const ns = [];
+  for (const entry of cs)
+  {
+    const [ r, c ] = entry.split(':').map(v => parseInt(v, 10));
+    let i;
+    for (i = c; i < w; i++)
+    {
+      if (isNaN(grid[r][i]))
+      {
+        break;
+      }
+    }
+    ns.push(parseInt(grid[r].slice(c, i).join(''), 10));
+  }
+
+  return ns.reduce((a, v) => a + v, 0);
+}
+
+function hyperNeutrino2(data)
+{
+  const grid = data.map(v => v.split(''));
+  const w = grid[0].length;
+  const h = grid.length;
+
+  let total = 0;
+
+  grid.forEach((row, r) =>
+  {
+    row.forEach((ch, c) =>
+    {
+      if (ch !== '*') { return; }
+
+      const cs = new Set();
+
+      [ r - 1, r, r + 1 ].forEach(cr =>
+      {
+        [ c - 1, c, c + 1 ].forEach(cc =>
+        {
+          if (cr < 0 || cr >= h || cc < 0 || cc >= w || isNaN(grid[cr][cc]))
+          {
+            return;
+          }
+          let nc = cc;
+          while (nc > 0 && ! isNaN(grid[cr][nc - 1]))
+          {
+            nc--;
+          }
+          cs.add(`${cr}:${nc}`);
+        });
+      });
+
+      if (cs.size !== 2) { return; }
+
+      const ns = [];
+      for (const entry of cs)
+      {
+        const [ r1, c1 ] = entry.split(':').map(v => parseInt(v, 10));
+        let i;
+        for (i = c1; i < w; i++)
+        {
+          if (isNaN(grid[r1][i]))
+          {
+            break;
+          }
+        }
+        ns.push(parseInt(grid[r1].slice(c1, i).join(''), 10));
+      }
+
+      total += ns[0] * ns[1];
+    });
+  });
+
+  return total;
+}
+
 function solve1(data)
 {
+  if (useHyperNeutrino)
+  {
+    return hyperNeutrino1(data);
+  }
+
   const grid = data.map(v => v.split(''));
 
   const { numbers, symbols } = parseGrid(grid);
@@ -90,9 +212,14 @@ function solve1(data)
 
 function solve2(data)
 {
+  if (useHyperNeutrino)
+  {
+    return hyperNeutrino2(data);
+  }
+
   const grid = data.map(v => v.split(''));
 
-  const { numbers, symbols } = parseGrid(grid);
+  const { numbers, symbols } = parseGrid(grid, '*');
 
   return symbols
     .map(symbol =>
