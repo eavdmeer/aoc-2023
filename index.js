@@ -1,8 +1,8 @@
 import day01 from './day01/index.js';
 import day02 from './day02/index.js';
 import day03 from './day03/index.js';
-/*
 import day04 from './day04/index.js';
+/*
 import day05 from './day05/index.js';
 import day06 from './day06/index.js';
 import day07 from './day07/index.js';
@@ -38,8 +38,8 @@ async function getResults()
     await day01('day01/data.txt').then(report),
     await day02('day02/data.txt').then(report),
     await day03('day03/data.txt').then(report),
-    /*
     await day04('day04/data.txt').then(report),
+    /*
     await day05('day05/data.txt').then(report),
     await day06('day06/data.txt').then(report),
     await day07('day07/data.txt').then(report),
