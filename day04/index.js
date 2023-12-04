@@ -29,28 +29,6 @@ function solve1(data)
     .reduce((a, v) => a + v, 0);
 }
 
-const cache = new Map();
-
-function getPrize(card, scores)
-{
-  const key = `${card}-${scores[card]}`;
-
-  if (cache.has(key))
-  {
-    return cache.get(key);
-  }
-
-  let res = 1;
-  for (let i = card + 1; i < card + 1 + scores[card]; i++)
-  {
-    res += getPrize(i, scores);
-  }
-
-  cache.set(key, res);
-
-  return res;
-}
-
 function hyperNeutrino2(data)
 {
   const m = new Map();
@@ -74,14 +52,23 @@ function solve2(data)
   {
     return hyperNeutrino2(data);
   }
+
   const scores = data
     .map(v => v.replace(/^.*: /, '').split(/\s*\|\s*/))
     .map(([ w, m ]) => intersect(w.split(/\s+/), m.split(/\s+/)).length);
 
+  const cache = new Map();
+
   let total = 0;
-  for (let i = data.length - 1; i >= 0; i--)
+  for (let card = data.length - 1; card >= 0; card--)
   {
-    total += getPrize(i, scores);
+    let res = 1;
+    for (let i = card + 1; i < card + 1 + scores[card]; i++)
+    {
+      res += cache.get(i) ?? 1;
+    }
+    cache.set(card, res);
+    total += res;
   }
 
   return total;
