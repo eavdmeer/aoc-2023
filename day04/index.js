@@ -32,12 +32,13 @@ const cache = new Map();
 function getPrize(card, scores, max)
 {
   const key = `${card}-${scores[card]}`;
+
   if (cache.has(key))
   {
     return cache.get(key);
   }
-  let res = 1;
 
+  let res = 1;
   for (let i = card + 1; i < card + 1 + scores[card] && i < max; i++)
   {
     res += getPrize(i, scores, max);
@@ -54,13 +55,10 @@ function solve2(data)
     .map(v => v.replace(/^.*: /, '').split(/\s*\|\s*/))
     .map(([ w, m ]) => intersect(w.split(/\s+/), m.split(/\s+/)).length);
 
-  let total = 0;
-  for (let i = data.length - 1; i >= 0; i--)
-  {
-    total += getPrize(i, scores, data.length);
-  }
-
-  return total;
+  return Object.keys(scores)
+    .reverse()
+    .map(i => getPrize(i, scores, data.length))
+    .reduce((a, v) => a + v, 0);
 }
 
 export default async function day04(target)
