@@ -63,7 +63,7 @@ function solve2(data)
   for (let card = data.length - 1; card >= 0; card--)
   {
     let res = 1;
-    for (let i = card + 1; i < card + 1 + scores[card]; i++)
+    for (let i = card + 1; i < card + 1 + scores[card] && i < data.length; i++)
     {
       res += cache.get(i) ?? 1;
     }
