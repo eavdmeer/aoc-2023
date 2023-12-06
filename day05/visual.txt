@@ -1,0 +1,43 @@
+case 1: (rs > is && re < ie)
+
+     OOOOOOOO
+  IIIIIIIIIIIIIIIIIIIIIIIII
+     RRRRRRRR
+  III        IIIIIIIIIIIIII
+       MMMMMMMM
+
+  New intervals: [ is, os ], [ oe, ie ]
+  Next round: transform [ os, oe ]
+
+case 2: (rs < is && re > ie)
+
+   OOOOOOOOOOOOOOOOOOOOOOOOO
+   IIIIIIIIIIIIIIIIIIIIIIIII
+  RRRRRRRRRRRRRRRRRRRRRRRRRRRR
+       MMMMMMMMMMMMMMMMMMMMMMMMM
+
+  New intervals: -
+  Next round: transform [ os, oe ]
+
+case 3: (rs > is && re > ie)
+
+                  OOOOOOOOO
+  IIIIIIIIIIIIIIIIIIIIIIIII
+                  RRRRRRRRRRRRRRR
+  IIIIIIIIIIIIIIII
+                      MMMMMMMMM
+
+  New intervals [ is, os ]
+  Next round: transform [ os, ie ]
+
+case 4: (rs < is && re < ie)
+
+      OOOOOOOOOOO
+      IIIIIIIIIIIIIIIIIIIIIIIII
+  RRRRRRRRRRRRRRR
+                 IIIIIIIIIIIIII
+        MMMMMMMMMMM
+
+  New intervals [ oe, ie ]
+  Next round: transform [ os, oe ]
+
