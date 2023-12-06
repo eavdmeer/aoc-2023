@@ -86,51 +86,51 @@ function traverseMaps2(range, maps)
     { min: range.start, max: range.start + range.length - 1 }
   ];
 
-  Object.entries(maps).slice(0, 10).forEach(([ key, map ]) =>
+  Object.entries(maps).forEach(([ , map ]) =>
   {
-    debug('-', key);
-    debug(map);
-    debug('intervals:', intervals);
-    intervals.forEach(iv =>
+    const processed = [];
+    while (intervals.length)
     {
-      debug('  ', 'iv:', iv);
-      map.some(m =>
+      const iv = intervals.pop();
+
+      // Find first overlap with all the map ranges
+      // Don't want to calculate the overlap interval again
+      let o;
+      const hit = map.find(r =>
       {
-        debug('    ', 'm:', m);
-        if (iv.min >= m.src && iv.max < m.src + m.cnt)
-        {
-          if (iv.max < m.src + m.cnt)
-          {
-            iv.min += m.dst - m.src;
-            iv.max += m.dst - m.src;
-            debug('      ', 'start and end within interval, interval updated to:', iv);
-            return true;
-          }
-
-          const newIv = { min: iv.min + m.cnt, max: iv.max };
-          iv.min += m.dst - m.src;
-          iv.max += m.dst + m.cnt - 1;
-          intervals.push(newIv);
-          debug('      ', 'start within, but end not within interval');
-          debug('      ', 'broken up into:', iv, newIv);
-          return true;
-        }
-
-        if (iv.max >= m.src && iv.max < m.src + m.cnt)
-        {
-          const newIv = { min: m.dst, max: iv.max + m.dst - m.src };
-          iv.max = m.src - 1;
-          intervals.push(newIv);
-          debug('      ', 'start not within, but end within interval');
-          debug('      ', 'broken up into:', iv, newIv);
-          return true;
-        }
-
-        debug('      ', 'start and end not within interval, unchanged');
-
-        return false;
+        o = {
+          min: Math.max(iv.min, r.src),
+          max: Math.min(iv.max, r.src + r.cnt - 1)
+        };
+        return o.min < o.max;
       });
-    });
+
+      // Without overlap, consider this interval processed
+      if (! hit)
+      {
+        processed.push(iv);
+        continue;
+      }
+
+      // Do transform on the overlap
+      processed.push({
+        min: o.min + hit.dst - hit.src,
+        max: o.max + hit.dst - hit.src
+      });
+
+      // Add any extra intervals to our list to process
+      if (iv.min < o.min)
+      {
+        intervals.push({ min: iv.min, max: o.min - 1 });
+      }
+      if (iv.max > o.max)
+      {
+        intervals.push({ min: o.max + 1, max: iv.max });
+      }
+    }
+
+    // Prepare intervals for the next round
+    intervals.push(...processed);
   });
 
   return Math.min(...intervals.map(iv => iv.min));
