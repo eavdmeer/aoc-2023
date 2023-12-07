@@ -19,33 +19,30 @@ function value(card)
   return values[card];
 }
 
-function score(hand)
+function frequencies(hand)
 {
-  const cards = hand.split('');
+  const m = hand
+    .split('')
+    .reduce((m, v) => { m.set(v, m.has(v) ? m.get(v) + 1 : 1); return m; },
+      new Map());
 
-  /* eslint-disable-next-line no-sequences */
-  const freq = cards.reduce((a, v) => (a[v] ? ++a[v] : a[v] = 1, a), {});
-
-  return { freq, value: cards.map(v => value(v)).join('') };
+  return new Map([ ...m ].sort((v1, v2) => v2[1] - v1[1]));
 }
 
 function compare(hand1, hand2)
 {
-  const score1 = score(hand1);
-  const score2 = score(hand2);
+  const n1 = Array.from(frequencies(hand1).values());
+  const n2 = Array.from(frequencies(hand2).values());
 
-  const c1 = Object.values(score1.freq).sort().reverse();
-  const c2 = Object.values(score2.freq).sort().reverse();
-
-  if (c1 > c2)
+  if (n1 > n2)
   {
     return 1;
   }
-  if (c1 < c2)
+  if (n1 < n2)
   {
     return -1;
   }
-  return score1.value > score2.value ? 1 : -1;
+  return hand1.split('').map(v => value(v)) > hand2.split('').map(v => value(v)) ? 1 : -1;
 }
 
 function solve1(data)
