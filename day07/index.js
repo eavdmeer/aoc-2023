@@ -21,25 +21,31 @@ function value(card)
 
 function score(hand)
 {
+  const cards = hand.split('');
+
   /* eslint-disable-next-line no-sequences */
-  return hand.split('').reduce((a, v) => (a[v] ? ++a[v] : a[v] = 1, a), {});
+  const freq = cards.reduce((a, v) => (a[v] ? ++a[v] : a[v] = 1, a), {});
+
+  return { freq, value: cards.map(v => value(v)).join('') };
 }
 
 function compare(hand1, hand2)
 {
-  const c1 = Object.values(score(hand1)).sort().reverse();
-  const c2 = Object.values(score(hand2)).sort().reverse();
+  const score1 = score(hand1);
+  const score2 = score(hand2);
 
-  for (let i = 0; i < c1.length; i++)
+  const c1 = Object.values(score1.freq).sort().reverse();
+  const c2 = Object.values(score2.freq).sort().reverse();
+
+  if (c1 > c2)
   {
-    if (c1[i] > c2[i]) { return 1; }
-    if (c1[i] < c2[i]) { return 1; }
+    return 1;
   }
-
-  const v1 = hand1.split('').map(v => value(v)).join('');
-  const v2 = hand2.split('').map(v => value(v)).join('');
-
-  return v1 > v2 ? 1 : -1;
+  if (c1 < c2)
+  {
+    return -1;
+  }
+  return score1.value > score2.value ? 1 : -1;
 }
 
 function solve1(data)
