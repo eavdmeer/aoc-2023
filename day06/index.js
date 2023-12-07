@@ -48,12 +48,14 @@ function abcFormula(a, b, c)
     max: (-b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / 2 * a
   };
 }
+
 function solve2(data)
 {
   const [ time, distance ] =
     data.map(v => parseInt(v.replace(/[^\d]*/g, ''), 10));
 
   const d = h => h * (time - h);
+
   /*
     d = h * (T - h)
     h2 - hT + d = 0
