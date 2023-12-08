@@ -8,15 +8,10 @@ if (process.argv[2])
   day07(process.argv[2]).then(console.log);
 }
 
-function value(card)
+function value(card, joker = false)
 {
-  const values = {
-    2: '2', 3: '3', 4: '4', 5: '5',
-    6: '6', 7: '7', 8: '8', 9: '9',
-    T: 'A', J: 'B', Q: 'C', K: 'D',
-    A: 'E'
-  };
-  return values[card];
+  const values = { T: 'A', J: 'B', Q: 'C', K: 'D', A: 'E' };
+  return joker && card === 'J' ? 0 : values[card] ?? card;
 }
 
 function frequencies(hand)
@@ -42,7 +37,8 @@ function compare(hand1, hand2)
   {
     return -1;
   }
-  return hand1.split('').map(v => value(v)) > hand2.split('').map(v => value(v)) ? 1 : -1;
+  return hand1.split('').map(v => value(v)) >
+    hand2.split('').map(v => value(v)) ? 1 : -1;
 }
 
 function solve1(data)
@@ -57,9 +53,62 @@ function solve1(data)
   return res;
 }
 
-function solve2()
+function optimize(hand)
 {
-  return 'todo';
+  const f = frequencies(hand);
+
+  if (! f.has('J')) { return hand; }
+
+  if (hand === 'JJJJJ') { return 'AAAAA'; }
+
+  const it = f.keys();
+  let bestChar = it.next();
+  while (bestChar.value === 'J' && ! bestChar.done)
+  {
+    bestChar = it.next();
+  }
+
+  return hand.replace(/J/g, bestChar.value);
+}
+
+function compare2(p1, p2)
+{
+  const n1 = Array.from(frequencies(p1.best).values());
+  const n2 = Array.from(frequencies(p2.best).values());
+
+  if (n1 > n2)
+  {
+    return 1;
+  }
+  if (n1 < n2)
+  {
+    return -1;
+  }
+
+  const s1 = p1.hand.includes('J') ? p1.hand : p1.best;
+  const s2 = p2.hand.includes('J') ? p2.hand : p2.best;
+
+  return s1.split('').map(v => value(v, true)) >
+    s2.split('').map(v => value(v, true)) ? 1 : -1;
+}
+
+function solve2(data)
+{
+  const hands = data
+    .map(v => v.split(' ')).map(v => [ v[0], parseInt(v[1], 10) ]);
+
+  const optimized = hands
+    .map(([ hand, bid ]) => ({ hand, bid, best: optimize(hand) }));
+
+  const order = optimized
+    .sort((v1, v2) => compare2(v1, v2));
+
+  debug(order);
+
+  const res = order
+    .reduce((a, v, i) => a + (i + 1) * v.bid, 0);
+
+  return res;
 }
 
 export default async function day07(target)
@@ -87,8 +136,8 @@ export default async function day07(target)
   }
 
   const part2 = solve2(data);
-  const expect2 = 'todo';
-  if (target.includes('example2') && part2 !== expect2)
+  const expect2 = 5905;
+  if (target.includes('example') && part2 !== expect2)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
   }
