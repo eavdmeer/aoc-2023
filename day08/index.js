@@ -62,7 +62,9 @@ function solve2(data)
         const key = `${pos}-${step}-${i % steps.length}`;
         if (cache.has(key))
         {
-          debug('I have seen this place before:', key, i, 'exiting');
+          const idx = visited.get(pos);
+          visited.set(pos, i - idx);
+          debug('cycle found:', key, 'length', i - idx, 'exiting');
           break;
         }
         cache.add(key);
