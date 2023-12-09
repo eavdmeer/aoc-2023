@@ -19,11 +19,6 @@ function evolve(rows)
   return evolve(rows);
 }
 
-function predict(grid)
-{
-  return grid.reduce((a, v) => a + v[v.length - 1], 0);
-}
-
 function solve1(data)
 {
   const grid = data
@@ -31,14 +26,10 @@ function solve1(data)
 
   const matrix = grid.map(v => evolve([ v ]));
 
-  const predictions = matrix.map(v => predict(v));
+  const predictions = matrix.map(g =>
+    g.reduce((a, v) => a + v[v.length - 1], 0));
 
   return predictions.reduce((a, v) => a + v, 0);
-}
-
-function predict2(grid)
-{
-  return [ ...grid ].reverse().reduce((a, v) => v[0] - a, 0);
 }
 
 function solve2(data)
@@ -48,7 +39,8 @@ function solve2(data)
 
   const matrix = grid.map(v => evolve([ v ]));
 
-  const predictions = matrix.map(v => predict2(v));
+  const predictions = matrix.map(g =>
+    [ ...g ].reverse().reduce((a, v) => v[0] - a, 0));
 
   return predictions.reduce((a, v) => a + v, 0);
 }
