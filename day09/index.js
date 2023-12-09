@@ -21,9 +21,7 @@ function evolve(rows)
 
 function predict(grid)
 {
-  return grid
-    .map(row => row[row.length - 1])
-    .reduce((a, v) => a + v, 0);
+  return grid.reduce((a, v) => a + v[v.length - 1], 0);
 }
 
 function solve1(data)
@@ -40,19 +38,7 @@ function solve1(data)
 
 function predict2(grid)
 {
-  return [ ...grid ].reverse()
-    .reduce((a, v) => v[0] - a, 0);
-  /*
-  let last = 0;
-  return [ ...grid ].reverse()
-    .map(row =>
-    {
-      const n = row[0] - last;
-      last = n;
-      return n;
-    })
-    .pop();
-    */
+  return [ ...grid ].reverse().reduce((a, v) => v[0] - a, 0);
 }
 
 function solve2(data)
