@@ -17,12 +17,12 @@ function parseData(data)
   const directions = {
     'S': 'X',
     '.': '',
+    'L': 'NE',
     '|': 'NS',
     '-': 'EW',
-    'L': 'NE',
     'J': 'NW',
     '7': 'SW',
-    'F': 'SE'
+    'F': 'ES'
   };
   /* eslint-enable quote-props */
 
@@ -40,14 +40,13 @@ function parseData(data)
         return directions[v] ?? v;
       }));
 
-  if (map[start.r]?.[start.c + 1]?.includes('W')) { start.dir += 'E'; }
-  if (map[start.r]?.[start.c - 1]?.includes('E')) { start.dir += 'W'; }
-  if (map[start.r + 1]?.[start.c]?.includes('N')) { start.dir += 'S'; }
   if (map[start.r - 1]?.[start.c]?.includes('S')) { start.dir += 'N'; }
+  if (map[start.r]?.[start.c + 1]?.includes('W')) { start.dir += 'E'; }
+  if (map[start.r + 1]?.[start.c]?.includes('N')) { start.dir += 'S'; }
+  if (map[start.r]?.[start.c - 1]?.includes('E')) { start.dir += 'W'; }
   map[start.r][start.c] += start.dir;
 
-  const idx = Object.values(directions)
-    .findIndex(v => v.includes(start.dir[0]) && v.includes(start.dir[1]));
+  const idx = Object.values(directions).indexOf(start.dir);
 
   start.ch = Object.keys(directions).at(idx);
 
@@ -152,7 +151,7 @@ function solve2(data)
         case '7':
         case 'J':
           assert.ok(up !== undefined, `7J up expected at (${r}, ${c})`);
-          if (ch !== (up ? 'J' : '7'))
+          if (ch === (up ? '7' : 'J'))
           {
             inside = ! inside;
           }
