@@ -118,30 +118,23 @@ function solve2(data, scaling = 1000000)
   const galaxies = findGalaxies(universe);
   debug('galaxies:', galaxies);
 
+  const remapped = galaxies.map(({ r, c }) =>
+    ({
+      r: r + (scaling - 1) * emptyRows.filter(er => er < r).length,
+      c: c + (scaling - 1) * emptyCols.filter(ec => ec < c).length
+    }));
+
+  debug('remapped:', remapped);
+
+  const manhatten = (p1, p2) => Math.abs(p1.c - p2.c) +
+    Math.abs(p1.r - p2.r);
+
   let total = 0;
-  for (let g1 = 0; g1 < galaxies.length; g1++)
+  for (let g1 = 0; g1 < remapped.length; g1++)
   {
-    for (let g2 = g1 + 1; g2 < galaxies.length; g2++)
+    for (let g2 = g1 + 1; g2 < remapped.length; g2++)
     {
-      const gal1 = galaxies[g1];
-      const gal2 = galaxies[g2];
-
-      const between = {
-        rows: emptyRows.filter(
-          r => Math.min(gal1.r, gal2.r) < r &&
-          r < Math.max(gal1.r, gal2.r)
-        ).length,
-        cols: emptyCols.filter(
-          c => Math.min(gal1.c, gal2.c) < c &&
-          c < Math.max(gal1.c, gal2.c)
-        ).length
-      };
-      debug('g1:', gal1, 'g2:', gal2, 'between:', between);
-
-      const delta = scaling * (between.rows + between.cols) -
-        between.rows - between.cols;
-
-      const d = delta + Math.abs(gal1.c - gal2.c) + Math.abs(gal1.r - gal2.r);
+      const d = manhatten(remapped[g1], remapped[g2]);
       debug('distance between galaxies', g1, 'and', g2, 'is:', d);
       total += d;
     }
