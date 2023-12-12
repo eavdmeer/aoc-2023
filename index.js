@@ -9,8 +9,8 @@ import day08 from './day08/index.js';
 import day09 from './day09/index.js';
 import day10 from './day10/index.js';
 import day11 from './day11/index.js';
-/*
 import day12 from './day12/index.js';
+/*
 import day13 from './day13/index.js';
 import day14 from './day14/index.js';
 import day15 from './day15/index.js';
@@ -46,8 +46,8 @@ async function getResults()
     await day09('day09/data.txt').then(report),
     await day10('day10/data.txt').then(report),
     await day11('day11/data.txt').then(report),
-    /*
     await day12('day12/data.txt').then(report),
+    /*
     await day13('day13/data.txt').then(report),
     await day14('day14/data.txt').then(report),
     await day15('day15/data.txt').then(report),
