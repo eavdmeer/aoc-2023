@@ -23,7 +23,8 @@
     "@datastructures-js/priority-queue": "^6.1.4",
     "compute-lcm": "^1.1.2",
     "debug": "^4.3.4",
-    "linear-solve": "^1.2.1"
+    "linear-solve": "^1.2.1",
+    "printf": "^0.6.1"
   },
   "devDependencies": {
     "eslint": "^8.30.0",
