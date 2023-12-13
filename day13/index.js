@@ -89,7 +89,7 @@ function solve2(data)
   const puzzles = data.split('\n\n').map(p => p.split('\n'))
     .map(puzzle => score(puzzle, true));
 
-  // assert.ok(puzzles.every(v => v !== 0), 'Not expecting any zeros!');
+  assert.ok(puzzles.every(v => v !== 0), 'Not expecting any zeros!');
 
   return puzzles.reduce((a, v) => a + v, 0);
 }
