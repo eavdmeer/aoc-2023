@@ -3,6 +3,8 @@ import makeDebug from 'debug';
 
 const debug = makeDebug('day14');
 
+const useHyperNeutrino = true;
+
 if (process.argv[2])
 {
   day14(process.argv[2]).then(console.log);
@@ -31,8 +33,55 @@ function score(grid)
     .reduce((a, v) => a + v, 0);
 }
 
+function strTranspose(matrix)
+{
+  const result = [];
+
+  for (let i = 0; i < matrix[0].length; i++)
+  {
+    result.push([]);
+  }
+
+  matrix.forEach(row =>
+  {
+    row.split('').forEach((col, c) => result[c].push(col));
+  });
+
+  return result.map(v => v.join(''));
+}
+
+function hyperStep(data)
+{
+  const grid = strTranspose(data);
+
+  const res = grid.map(str => str.split('#')
+    .map(v => v.split('')
+      .sort()
+      .reverse()
+      .join(''))
+    .join('#'));
+
+  return res;
+}
+
+function hyperNeutrino1(data)
+{
+  const res = hyperStep(data);
+
+  return res
+    .map(row => row
+      .split('')
+      .map((v, i) => v === 'O' ? row.length - i : 0)
+      .reduce((a, v) => a + v, 0))
+    .reduce((a, v) => a + v, 0);
+}
 function solve1(data)
 {
+  if (useHyperNeutrino)
+  {
+    return hyperNeutrino1(data);
+  }
+
   const grid = transpose(data.map(line => line.split('')));
 
   // console.log('grid:');
