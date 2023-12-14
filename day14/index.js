@@ -22,6 +22,15 @@ function transpose(matrix)
   return result;
 }
 
+function score(grid)
+{
+  return grid
+    .map(row => row
+      .map((v, i) => v === 'O' ? row.length - i : 0)
+      .reduce((a, v) => a + v, 0))
+    .reduce((a, v) => a + v, 0);
+}
+
 function solve1(data)
 {
   const grid = transpose(data.map(line => line.split('')));
@@ -70,16 +79,123 @@ function solve1(data)
   // console.log('after:');
   // console.log(grid.map(v => v.join('')).join('\n'));
 
-  return grid
-    .map(row => row
-      .map((v, i) => v === 'O' ? row.length - i : 0)
-      .reduce((a, v) => a + v, 0))
-    .reduce((a, v) => a + v, 0);
+  return score(grid);
 }
 
-function solve2()
+function look(grid, ball, delta)
 {
-  return 'todo';
+  const w = grid[0].length;
+  const h = grid.length;
+
+  let r = ball.r;
+  let c = ball.c;
+  let hit;
+
+  do
+  {
+    r += delta.r;
+    c += delta.c;
+    if (grid?.[r]?.[c] === '.')
+    {
+      hit = { r, c };
+    }
+    else
+    {
+      return hit;
+    }
+  } while (r >= 0 && c >= 0 && r < h && c < w);
+
+  return undefined;
+}
+
+function tilt(grid, direction)
+{
+  const balls = [];
+  grid.forEach((row, r) =>
+  {
+    row.forEach((ch, c) =>
+    {
+      if (ch === 'O') { balls.push({ r, c }); }
+    });
+  });
+  const delta = { r: 0, c: 0 };
+  switch (direction)
+  {
+    case 'N':
+      balls.sort((a, b) => a.r - b.r);
+      delta.r = -1; delta.c = 0;
+      break;
+    case 'E':
+      balls.sort((a, b) => b.c - a.c);
+      delta.r = 0; delta.c = 1;
+      break;
+    case 'W':
+      balls.sort((a, b) => a.c - b.c);
+      delta.r = 0; delta.c = -1;
+      break;
+    case 'S':
+      balls.sort((a, b) => b.r - a.r);
+      delta.r = 1; delta.c = 0;
+      break;
+    default:
+      break;
+  }
+
+  balls.forEach(ball =>
+  {
+    const free = look(grid, ball, delta);
+    if (free)
+    {
+      grid[free.r][free.c] = 'O';
+      grid[ball.r][ball.c] = '.';
+      ball.r = free.r;
+      ball.c = free.c;
+    }
+  });
+}
+
+function sum(grid)
+{
+  return grid.map(v => v.join('')).join('');
+}
+
+function cycle(grid)
+{
+  tilt(grid, 'N');
+  tilt(grid, 'W');
+  tilt(grid, 'S');
+  tilt(grid, 'E');
+}
+
+function solve2(data)
+{
+  const grid = data.map(line => line.split(''));
+
+  const checksums = new Map();
+
+  let it = 0;
+  let checksum;
+
+  do
+  {
+    checksum = sum(grid);
+    checksums.set(checksum, it);
+    cycle(grid);
+    it++;
+    checksum = sum(grid);
+  } while (it < 3000 && ! checksums.has(sum(grid)));
+
+  const offset = checksums.get(checksum);
+  const len = it - offset;
+  debug('cycle every', len, 'cycles after', offset);
+
+  const cycles = (1000000000 - offset) % len;
+
+  debug('need', cycles, 'more cycles');
+
+  for (let i = 0; i < cycles; i++) { cycle(grid); }
+
+  return score(transpose(grid));
 }
 
 export default async function day14(target)
@@ -101,14 +217,18 @@ export default async function day14(target)
 
   const part1 = solve1(data);
   const expect1 = 136;
-  if (target.includes('example1') && part1 !== expect1)
+  if (target.includes('example') && part1 !== expect1)
   {
     throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1}`);
   }
+  else if (target === 'data.txt' && part1 !== 108641)
+  {
+    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; 108641`);
+  }
 
   const part2 = solve2(data);
-  const expect2 = 'todo';
-  if (target.includes('example2') && part2 !== expect2)
+  const expect2 = 64;
+  if (target.includes('example') && part2 !== expect2)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
   }
