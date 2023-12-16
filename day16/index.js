@@ -15,10 +15,7 @@ const offGrid = (grid, r, c) => r < 0 || r >= grid.length ||
 
 function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
 {
-  debug('beam:', beam, 'pos:', r, c, 'dir:', dir);
-  debug(visited.size);
-
-  const key = `${r}-${c}:${dir.r}-${dir.c}}`;
+  const key = `${r}-${c}:${dir}`;
 
   if (visited.has(key))
   {
@@ -32,8 +29,8 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
     m.add(`${r},${c}`);
   }
 
-  const nr = r + dir.r;
-  const nc = c + dir.c;
+  const nr = r + (dir === 'D' ? 1 : dir === 'U' ? -1 : 0);
+  const nc = c + (dir === 'R' ? 1 : dir === 'L' ? -1 : 0);
 
   // detect going off grid
   if (offGrid(grid, nr, nc))
@@ -51,50 +48,46 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
 
   if (ch === '-')
   {
-    if (dir.r === 0)
+    if (dir === 'L' || dir === 'R')
     {
       return walk(grid, nr, nc, dir, visited, m, beam);
     }
 
     return Math.max(
-      walk(grid, nr, nc, { r: 0, c: -1 }, visited, m, beam),
-      walk(grid, nr, nc, { r: 0, c: 1 }, visited, m, beam + 1)
+      walk(grid, nr, nc, 'L', visited, m, beam),
+      walk(grid, nr, nc, 'R', visited, m, beam + 1)
     );
   }
 
   if (ch === '|')
   {
-    if (dir.c === 0)
+    if (dir === 'U' || dir === 'D')
     {
       return walk(grid, nr, nc, dir, visited, m, beam);
     }
 
     return Math.max(
-      walk(grid, nr, nc, { r: -1, c: 0 }, visited, m, beam),
-      walk(grid, nr, nc, { r: 1, c: 0 }, visited, m, beam + 1)
+      walk(grid, nr, nc, 'U', visited, m, beam),
+      walk(grid, nr, nc, 'D', visited, m, beam + 1)
     );
   }
 
   if (ch === '/')
   {
-    if (dir.r !== 0)
+    if (dir === 'U' || dir === 'D')
     {
-      return walk(grid, nr, nc, { r: 0, c: dir.r > 0 ? -1 : 1 },
-        visited, m, beam);
+      return walk(grid, nr, nc, dir === 'D' ? 'L' : 'R', visited, m, beam);
     }
-    return walk(grid, nr, nc, { r: dir.c > 0 ? -1 : 1, c: 0 },
-      visited, m, beam);
+    return walk(grid, nr, nc, dir === 'R' ? 'U' : 'D', visited, m, beam);
   }
 
   if (ch === '\\')
   {
-    if (dir.r !== 0)
+    if (dir === 'U' || dir === 'D')
     {
-      return walk(grid, nr, nc, { r: 0, c: dir.r > 0 ? 1 : -1 },
-        visited, m, beam);
+      return walk(grid, nr, nc, dir === 'D' ? 'R' : 'L', visited, m, beam);
     }
-    return walk(grid, nr, nc, { r: dir.c > 0 ? 1 : -1, c: 0 },
-      visited, m, beam);
+    return walk(grid, nr, nc, dir === 'R' ? 'D' : 'U', visited, m, beam);
   }
 
   throw new Error(`unknown character found on grid: '${ch}' at r = ${nr}, c = ${nc}`);
@@ -102,7 +95,7 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
 
 function solve1(data)
 {
-  return walk(data, 0, -1, { r: 0, c: 1 });
+  return walk(data, 0, -1, 'R');
 }
 
 function solve2(data)
@@ -110,13 +103,13 @@ function solve2(data)
   const scores = [];
   for (let r = 0; r < data.length; r++)
   {
-    scores.push(walk(data, r, -1, { r: 0, c: 1 }));
-    scores.push(walk(data, r, data[0].length, { r: 0, c: -1 }));
+    scores.push(walk(data, r, -1, '$'));
+    scores.push(walk(data, r, data[0].length, 'L'));
   }
   for (let c = 0; c < data[0].length; c++)
   {
-    scores.push(walk(data, -1, c, { r: 1, c: 0 }));
-    scores.push(walk(data, data.length, c, { r: -1, c: 0 }));
+    scores.push(walk(data, -1, c, 'D'));
+    scores.push(walk(data, data.length, c, 'U'));
   }
 
   return Math.max(...scores);
