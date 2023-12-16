@@ -32,32 +32,33 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
     m.add(`${r},${c}`);
   }
 
-  const npos = { r: r + dir.r, c: c + dir.c };
+  const nr = r + dir.r;
+  const nc = c + dir.c;
 
   // detect going off grid
-  if (offGrid(grid, npos.r, npos.c))
+  if (offGrid(grid, nr, nc))
   {
     debug('going off grid, terminating beam', beam);
     return m.size;
   }
 
-  const ch = grid[npos.r].charAt(npos.c);
+  const ch = grid[nr].charAt(nc);
 
   if (ch === '.')
   {
-    return walk(grid, npos.r, npos.c, dir, visited, m, beam);
+    return walk(grid, nr, nc, dir, visited, m, beam);
   }
 
   if (ch === '-')
   {
     if (dir.r === 0)
     {
-      return walk(grid, npos.r, npos.c, dir, visited, m, beam);
+      return walk(grid, nr, nc, dir, visited, m, beam);
     }
 
     return Math.max(
-      walk(grid, npos.r, npos.c, { r: 0, c: -1 }, visited, m, beam),
-      walk(grid, npos.r, npos.c, { r: 0, c: 1 }, visited, m, beam + 1)
+      walk(grid, nr, nc, { r: 0, c: -1 }, visited, m, beam),
+      walk(grid, nr, nc, { r: 0, c: 1 }, visited, m, beam + 1)
     );
   }
 
@@ -65,12 +66,12 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
   {
     if (dir.c === 0)
     {
-      return walk(grid, npos.r, npos.c, dir, visited, m, beam);
+      return walk(grid, nr, nc, dir, visited, m, beam);
     }
 
     return Math.max(
-      walk(grid, npos.r, npos.c, { r: -1, c: 0 }, visited, m, beam),
-      walk(grid, npos.r, npos.c, { r: 1, c: 0 }, visited, m, beam + 1)
+      walk(grid, nr, nc, { r: -1, c: 0 }, visited, m, beam),
+      walk(grid, nr, nc, { r: 1, c: 0 }, visited, m, beam + 1)
     );
   }
 
@@ -78,10 +79,10 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
   {
     if (dir.r !== 0)
     {
-      return walk(grid, npos.r, npos.c, { r: 0, c: dir.r > 0 ? -1 : 1 },
+      return walk(grid, nr, nc, { r: 0, c: dir.r > 0 ? -1 : 1 },
         visited, m, beam);
     }
-    return walk(grid, npos.r, npos.c, { r: dir.c > 0 ? -1 : 1, c: 0 },
+    return walk(grid, nr, nc, { r: dir.c > 0 ? -1 : 1, c: 0 },
       visited, m, beam);
   }
 
@@ -89,14 +90,14 @@ function walk(grid, r, c, dir, visited = new Set(), m = new Set(), beam = 0)
   {
     if (dir.r !== 0)
     {
-      return walk(grid, npos.r, npos.c, { r: 0, c: dir.r > 0 ? 1 : -1 },
+      return walk(grid, nr, nc, { r: 0, c: dir.r > 0 ? 1 : -1 },
         visited, m, beam);
     }
-    return walk(grid, npos.r, npos.c, { r: dir.c > 0 ? 1 : -1, c: 0 },
+    return walk(grid, nr, nc, { r: dir.c > 0 ? 1 : -1, c: 0 },
       visited, m, beam);
   }
 
-  throw new Error(`unknown character found on grid: '${ch}' at r = ${npos.r}, c = ${npos.c}`);
+  throw new Error(`unknown character found on grid: '${ch}' at r = ${nr}, c = ${nc}`);
 }
 
 function solve1(data)
