@@ -44,23 +44,22 @@ function solve(data, rs, cs, re, ce, part = 1)
 {
   const heap = new MinPriorityQueue(v => v.cost);
 
-  heap.push({ cost: 0, r: rs, c: cs, d: '-', steps: 0, path: [] });
+  heap.push({ cost: 0, r: rs, c: cs, d: '-', steps: 0 });
   const seen = new Map();
 
   while (heap.size() > 0)
   {
-    const { cost, r, c, d, steps, path } = heap.dequeue();
+    const { cost, r, c, d, steps } = heap.dequeue();
 
     const key = keyVal(r, c, d, steps);
 
     if (seen.has(key)) { continue; }
 
-    path.push({ r, c, d, cost });
     seen.set(key, { r, c, d, steps, cost });
 
     if (r === re && c === ce)
     {
-      if (part === 1 || steps >= 4) { return { path, cost }; }
+      if (part === 1 || steps >= 4) { return cost; }
       continue;
     }
 
@@ -72,8 +71,8 @@ function solve(data, rs, cs, re, ce, part = 1)
       heap.push({
         cost: cost + data[lr][lc],
         r: lr, c: lc,
-        d: ld, steps: ld === d ? steps + 1 : 1,
-        path: [ ...path ] });
+        d: ld, steps: ld === d ? steps + 1 : 1
+      });
     });
   }
 
@@ -82,36 +81,20 @@ function solve(data, rs, cs, re, ce, part = 1)
 
 function solve1(data)
 {
-  const grid = data
-    .map(line => line
-      .split('')
-      .map(v => parseInt(v, 10)
-      )
-    );
+  const grid = data.map(line => line.split('').map(Number));
 
-  const solution = solve(grid, 0, 0, data.length - 1, data[0].length - 1, 1);
+  const cost = solve(grid, 0, 0, data.length - 1, data[0].length - 1, 1);
 
-  debug('final path:', solution.path.map(v => v.d).join(''),
-    'with cost:', solution.cost);
-
-  return solution.cost;
+  return cost;
 }
 
 function solve2(data)
 {
-  const grid = data
-    .map(line => line
-      .split('')
-      .map(v => parseInt(v, 10)
-      )
-    );
+  const grid = data.map(line => line.split('').map(Number));
 
-  const solution = solve(grid, 0, 0, data.length - 1, data[0].length - 1, 2);
+  const cost = solve(grid, 0, 0, data.length - 1, data[0].length - 1, 2);
 
-  debug('final path:', solution.path.map(v => v.d).join(''),
-    'with cost:', solution.cost);
-
-  return solution.cost;
+  return cost;
 }
 
 export default async function day17(target)
@@ -147,6 +130,10 @@ export default async function day17(target)
   if (target.includes('example') && part2 !== expect2)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
+  }
+  if (target.includes('data.txt') && part2 !== 825)
+  {
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; 825`);
   }
 
   return { day: 'day17', part1, part2, duration: Date.now() - start };
