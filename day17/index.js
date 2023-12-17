@@ -37,6 +37,9 @@ function neighbors(data, r, c, d, steps, part)
   return points.filter(([ , , dp ]) => allowRepeat || dp !== d);
 }
 
+const D = { U: 1, D: 2, R: 3, L: 4 };
+const keyVal = (r, c, d, steps) => r << 16 | c << 8 | D[d] << 4 | steps;
+
 function solve(data, rs, cs, re, ce, part = 1)
 {
   const heap = new MinPriorityQueue(v => v.cost);
@@ -48,7 +51,7 @@ function solve(data, rs, cs, re, ce, part = 1)
   {
     const { cost, r, c, d, steps, path } = heap.dequeue();
 
-    const key = `${r},${c},${d},${steps}`;
+    const key = keyVal(r, c, d, steps);
 
     if (seen.has(key)) { continue; }
 
