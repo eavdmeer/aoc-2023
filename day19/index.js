@@ -70,20 +70,13 @@ function solve1(data)
   return results.get('A').reduce((a, v) => a + v, 0);
 }
 
-let indent = '';
-
 function count(workflows, ranges, flow)
 {
-  console.log(indent, 'count for ranges:', ranges, 'on flow', flow);
-  indent = `${indent}  `;
   if (flow === 'R') { return 0; }
   if (flow === 'A')
   {
-    const score = Object.values(ranges)
-      .reduce((a, [ h, l ]) => a * (h - l + 1), 1);
-    console.log(indent, 'returning count:', score);
-    indent = indent.substring(2);
-    return score;
+    return Object.values(ranges)
+      .reduce((a, [ lo, hi ]) => a * (hi - lo + 1), 1);
   }
   const rules = workflows.get(flow);
 
@@ -98,14 +91,9 @@ function count(workflows, ranges, flow)
 
   rules.forEach(([ condition, dest ]) =>
   {
-    console.log(indent, 'work ranges', workRanges);
-    console.log(indent, 'test condition', condition, 'for target', dest);
-
     if (condition === '1==1')
     {
-      console.log(indent, 'following fallback case', dest);
       total += count(workflows, workRanges, dest);
-      indent = indent.substring(2);
       return;
     }
 
@@ -122,8 +110,6 @@ function count(workflows, ranges, flow)
       [ Math.max(val, lo), hi ] :
       [ lo, Math.min(val, hi) ];
 
-    console.log(indent, name, op, val, '[', lo, hi, ']', 'T =>', T, 'F =>', F);
-
     if (T[0] < T[1])
     {
       total += count(workflows, { ...workRanges, [name]: T }, dest);
@@ -133,10 +119,6 @@ function count(workflows, ranges, flow)
       workRanges[name] = F;
     }
   });
-
-  indent = indent.substring(2);
-
-  console.log(indent, 'returning', total);
 
   return total;
 }
@@ -154,7 +136,7 @@ function solve2(data)
         .split(',')
         .map(w => w.includes(':') ? w.split(':') : [ '1==1', w ]))
     );
-  console.log('workflows:', workflows);
+  debug('workflows:', workflows);
 
   const ranges = {
     x: [ 1, 4000 ],
@@ -196,6 +178,10 @@ export default async function day19(target)
   if (target.includes('example') && part2 !== expect2)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
+  }
+  if (target.includes('data.txt') && part2 !== 116738260946855)
+  {
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; 116738260946855expect2`);
   }
 
   return { day: 'day19', part1, part2, duration: Date.now() - start };
