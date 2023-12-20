@@ -13,26 +13,27 @@ function count(nodes)
 {
   const pulses = { L: 0, H: 0 };
 
-  const runItem = ([ target, pulse, origin ]) =>
+  const stack = [ [ 'broadcaster', 'L', 'button' ] ];
+
+  while (stack.length)
   {
-    // New jobs for the next round
-    const jobs = [];
+    const [ target, pulse, origin ] = stack.pop();
 
     pulses[pulse]++;
 
-    if (! (target in nodes)) { return jobs; }
+    if (! (target in nodes)) { continue; }
 
     const [ type, destinations, state ] = nodes[target];
 
     if (type === 'b')
     {
-      destinations.forEach(n => jobs.push([ n, pulse, target ]));
+      destinations.forEach(n => stack.unshift([ n, pulse, target ]));
     }
     else if (type === '%' && pulse === 'L')
     {
       nodes[target][2] = state === 'L' ? 'H' : 'L';
       destinations.forEach(n =>
-        jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
+        stack.unshift([ n, state === 'H' ? 'L' : 'H', target ]));
     }
     else if (type === '&')
     {
@@ -40,79 +41,73 @@ function count(nodes)
 
       const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
 
-      destinations.forEach(n => jobs.push([ n, out, target ]));
+      destinations.forEach(n => stack.unshift([ n, out, target ]));
     }
-
-    return jobs;
-  };
-
-  let stack = [ [ 'broadcaster', 'L', 'button' ] ];
-
-  while (stack.length)
-  {
-    stack = stack
-      .map(runItem)
-      .reduce((a, v) => { a.push(...v); return a; }, []);
   }
 
   return pulses;
 }
 
-function getMagic(nodes)
+function getMagic(nodes, name)
 {
-  const magic = { ch: -1, gh: -1, sv: -1, th: -1 };
+  let hits = [ name ];
+  let allCon = true;
+  do
+  {
+    hits = Object.entries(nodes)
+      /* eslint-disable-next-line no-loop-func */
+      .filter(([ , node ]) => node[1].includes(hits[0]));
+
+    allCon = hits.every(([ , node ]) => node[0] === '&');
+    hits = hits
+      .map(([ k ]) => k);
+
+  } while (allCon && hits.length === 1);
+
+  const magic = hits
+    .reduce((a, v) => { a[v] = -1; return a; }, {});
 
   let pushes = 0;
-
-  const runItem = ([ target, pulse, origin ]) =>
-  {
-    // Next jobs to run
-    const jobs = [];
-
-    if (! (target in nodes)) { return jobs; }
-
-    if (target === 'cn' && pulse === 'H' && magic[origin] < 0)
-    {
-      // Update magic numbers
-      magic[origin] = pushes;
-    }
-
-    const [ type, destinations, state ] = nodes[target];
-
-    if (type === 'b')
-    {
-      destinations.forEach(n => jobs.push([ n, pulse, target ]));
-    }
-    else if (type === '%' && pulse === 'L')
-    {
-      nodes[target][2] = state === 'L' ? 'H' : 'L';
-      destinations.forEach(n =>
-        jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
-    }
-    else if (type === '&')
-    {
-      state[origin] = pulse;
-
-      const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
-
-      destinations.forEach(n => jobs.push([ n, out, target ]));
-    }
-
-    return jobs;
-  };
 
   while (Object.values(magic).some(v => v < 0))
   {
     // Button pushed
     pushes++;
 
-    let stack = [ [ 'broadcaster', 'L', 'button' ] ];
+    const stack = [ [ 'broadcaster', 'L', 'button' ] ];
 
     while (stack.length)
     {
-      stack = stack
-        .map(runItem)
-        .reduce((a, v) => { a.push(...v); return a; }, []);
+      const [ target, pulse, origin ] = stack.pop();
+
+      if (! (target in nodes)) { continue; }
+
+      if (target === 'cn' && pulse === 'H' && magic[origin] < 0)
+      {
+        // Update magic numbers
+        magic[origin] = pushes;
+      }
+
+      const [ type, destinations, state ] = nodes[target];
+
+      if (type === 'b')
+      {
+        destinations.forEach(n => stack.unshift([ n, pulse, target ]));
+      }
+      else if (type === '%' && pulse === 'L')
+      {
+        nodes[target][2] = state === 'L' ? 'H' : 'L';
+        destinations.forEach(n =>
+          stack.unshift([ n, state === 'H' ? 'L' : 'H', target ]));
+      }
+      else if (type === '&')
+      {
+        state[origin] = pulse;
+
+        const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
+
+        destinations.forEach(n => stack.unshift([ n, out, target ]));
+      }
     }
   }
 
@@ -173,7 +168,7 @@ function solve2(data)
 {
   const nodes = getNodes(data);
 
-  const magic = getMagic(nodes);
+  const magic = getMagic(nodes, 'rx');
   debug('magic numbers:', magic);
 
   return lcm(...Object.values(magic));
