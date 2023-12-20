@@ -11,46 +11,48 @@ if (process.argv[2])
 
 function count(nodes)
 {
-  const stack = [];
   const pulses = { L: 0, H: 0 };
 
-  stack.push([ 'broadcaster', 'L', 'button' ]);
-
-  /* eslint-disable no-loop-func */
-  while (stack.length)
+  const runItem = ([ target, pulse, origin ]) =>
   {
+    // New jobs for the next round
     const jobs = [];
 
-    stack.forEach(([ target, pulse, origin ]) =>
+    pulses[pulse]++;
+
+    if (! (target in nodes)) { return jobs; }
+
+    const [ type, destinations, state ] = nodes[target];
+
+    if (type === 'b')
     {
-      pulses[pulse]++;
-      if (! (target in nodes)) { return; }
-      const [ type, destinations, state ] = nodes[target];
-      if (type === 'b')
-      {
-        destinations.forEach(n => jobs.push([ n, pulse, target ]));
-      }
-      else if (type === '%')
-      {
-        if (pulse === 'L')
-        {
-          nodes[target][2] = state === 'L' ? 'H' : 'L';
-          destinations.forEach(n =>
-            jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
-        }
-      }
-      else if (type === '&')
-      {
-        state[origin] = pulse;
+      destinations.forEach(n => jobs.push([ n, pulse, target ]));
+    }
+    else if (type === '%' && pulse === 'L')
+    {
+      nodes[target][2] = state === 'L' ? 'H' : 'L';
+      destinations.forEach(n =>
+        jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
+    }
+    else if (type === '&')
+    {
+      state[origin] = pulse;
 
-        const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
+      const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
 
-        destinations.forEach(n => jobs.push([ n, out, target ]));
-      }
-    });
+      destinations.forEach(n => jobs.push([ n, out, target ]));
+    }
 
-    stack.length = 0;
-    stack.push(...jobs);
+    return jobs;
+  };
+
+  let stack = [ [ 'broadcaster', 'L', 'button' ] ];
+
+  while (stack.length)
+  {
+    stack = stack
+      .map(runItem)
+      .reduce((a, v) => { a.push(...v); return a; }, []);
   }
 
   return pulses;
@@ -58,60 +60,59 @@ function count(nodes)
 
 function getMagic(nodes)
 {
-  const stack = [];
-
   const magic = { ch: -1, gh: -1, sv: -1, th: -1 };
 
   let pushes = 0;
+
+  const runItem = ([ target, pulse, origin ]) =>
+  {
+    // Next jobs to run
+    const jobs = [];
+
+    if (! (target in nodes)) { return jobs; }
+
+    if (target === 'cn' && pulse === 'H' && magic[origin] < 0)
+    {
+      // Update magic numbers
+      magic[origin] = pushes;
+    }
+
+    const [ type, destinations, state ] = nodes[target];
+
+    if (type === 'b')
+    {
+      destinations.forEach(n => jobs.push([ n, pulse, target ]));
+    }
+    else if (type === '%' && pulse === 'L')
+    {
+      nodes[target][2] = state === 'L' ? 'H' : 'L';
+      destinations.forEach(n =>
+        jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
+    }
+    else if (type === '&')
+    {
+      state[origin] = pulse;
+
+      const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
+
+      destinations.forEach(n => jobs.push([ n, out, target ]));
+    }
+
+    return jobs;
+  };
 
   while (Object.values(magic).some(v => v < 0))
   {
     // Button pushed
     pushes++;
 
-    stack.push([ 'broadcaster', 'L', 'button' ]);
+    let stack = [ [ 'broadcaster', 'L', 'button' ] ];
 
-    /* eslint-disable no-loop-func */
     while (stack.length)
     {
-      const jobs = [];
-
-      stack.forEach(([ target, pulse, origin ]) =>
-      {
-        if (target === 'cn' && pulse === 'H' && magic[origin] < 0)
-        {
-          // Update magic numbers
-          magic[origin] = pushes;
-        }
-
-        if (! (target in nodes)) { return; }
-
-        const [ type, destinations, state ] = nodes[target];
-        if (type === 'b')
-        {
-          destinations.forEach(n => jobs.push([ n, pulse, target ]));
-        }
-        else if (type === '%')
-        {
-          if (pulse === 'L')
-          {
-            nodes[target][2] = state === 'L' ? 'H' : 'L';
-            destinations.forEach(n =>
-              jobs.push([ n, state === 'H' ? 'L' : 'H', target ]));
-          }
-        }
-        else if (type === '&')
-        {
-          state[origin] = pulse;
-
-          const out = Object.values(state).every(v => v === 'H') ? 'L' : 'H';
-
-          destinations.forEach(n => jobs.push([ n, out, target ]));
-        }
-      });
-
-      stack.length = 0;
-      stack.push(...jobs);
+      stack = stack
+        .map(runItem)
+        .reduce((a, v) => { a.push(...v); return a; }, []);
     }
   }
 
