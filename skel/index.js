@@ -41,7 +41,7 @@ export default async function dayxx(target)
 
   const part1 = solve1(data);
   const expect1a = 0;
-  if (target.includes('example1') && part1 !== expect1a)
+  if (target.includes('example') && part1 !== expect1a)
   {
     throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1a}`);
   }
@@ -53,7 +53,7 @@ export default async function dayxx(target)
 
   const part2 = solve2(data);
   const expect2a = 0;
-  if (target.includes('example2') && part2 !== expect2a)
+  if (target.includes('example') && part2 !== expect2a)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2a}`);
   }
