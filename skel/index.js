@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as fs from 'fs/promises';
 import makeDebug from 'debug';
 
@@ -8,14 +10,16 @@ if (process.argv[2])
   dayxx(process.argv[2]).then(console.log);
 }
 
-function solve1()
+function solve1(data)
 {
-  return 'todo';
+  debug('data:', data);
+  return 0;
 }
 
-function solve2()
+function solve2(data)
 {
-  return 'todo';
+  debug('data:', data);
+  return 0;
 }
 
 export default async function dayxx(target)
@@ -36,17 +40,27 @@ export default async function dayxx(target)
   debug('data', data);
 
   const part1 = solve1(data);
-  const expect1 = 'todo';
-  if (target.includes('example1') && part1 !== expect1)
+  const expect1a = 0;
+  if (target.includes('example1') && part1 !== expect1a)
   {
-    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1}`);
+    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1a}`);
+  }
+  const expect1b = 0;
+  if (target === 'data.txt' && part1 !== expect1b)
+  {
+    throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1b}`);
   }
 
   const part2 = solve2(data);
-  const expect2 = 'todo';
-  if (target.includes('example2') && part2 !== expect2)
+  const expect2a = 0;
+  if (target.includes('example2') && part2 !== expect2a)
   {
-    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2}`);
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2a}`);
+  }
+  const expect2b = 0;
+  if (target === 'data.txt' && part2 !== expect2b)
+  {
+    throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2b}`);
   }
 
   return { day: 'dayxx', part1, part2, duration: Date.now() - start };
