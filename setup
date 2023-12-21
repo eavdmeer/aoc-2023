@@ -27,8 +27,6 @@ touch example.txt data.txt
 
 # git add  example1.txt example2.txt data.txt
 
-alias aot='cd "$day" && ./index.js example.txt'
-
 editor=gvim
 which "$editor" >& /dev/null || editor=mvim
 
