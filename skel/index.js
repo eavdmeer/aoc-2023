@@ -7,7 +7,9 @@ const debug = makeDebug('dayxx');
 
 if (process.argv[2])
 {
-  dayxx(process.argv[2]).then(console.log);
+  dayxx(process.argv[2])
+    .then(console.log)
+    .catch(err => console.log(err.message));
 }
 
 function solve1(data)
