@@ -2,7 +2,6 @@
 
 import * as fs from 'fs/promises';
 import makeDebug from 'debug';
-import { MaxPriorityQueue } from '@datastructures-js/priority-queue';
 
 const debug = makeDebug('day23');
 
@@ -36,16 +35,16 @@ const kv = (r, c, d) => `${r},${c}:${d}`;
 
 function walk(grid, sr, sc, er, ec, dir = 'X')
 {
-  const heap = new MaxPriorityQueue(v => v.cost);
+  const stack = [];
 
-  heap.push({ cost: 0, r: sr, c: sc, d: dir });
+  stack.push({ cost: 0, r: sr, c: sc, d: dir });
   const seen = new Set();
 
   const answers = [];
-  while (heap.size() > 0)
+  while (stack.length > 0)
   {
-    debug('heap:', heap.size());
-    const { cost, r, c, d } = heap.dequeue();
+    debug('stack:', stack.length);
+    const { cost, r, c, d } = stack.shift();
     debug({ cost, r, c, d });
     if (seen.has(kv(r, c))) { continue; }
 
@@ -60,7 +59,7 @@ function walk(grid, sr, sc, er, ec, dir = 'X')
     const next = neighbors(grid, r, c, d);
     debug('next:', next);
     next.forEach(([ nr, nc, nd ]) =>
-      heap.push({ cost: cost + 1, r: nr, c: nc, d: nd }));
+      stack.push({ cost: cost + 1, r: nr, c: nc, d: nd }));
   }
 
   const max = Math.max(...answers.map(v => v.cost));
