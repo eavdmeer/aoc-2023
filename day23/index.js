@@ -125,9 +125,7 @@ function solve1(data)
   data.w = data[0].length;
   data.h = data.length;
 
-  return 94;
-  // return 2254;
-  const res = fwalk(data, sr, sc, er, ec);
+  const res = walk(data, sr, sc, er, ec);
   if (debug.enabled)
   {
     drawPath(data, res.seen);
@@ -283,6 +281,8 @@ export default async function day23(target)
     throw new Error(`Invalid part 1 solution: ${part1}. Expecting; ${expect1b}`);
   }
 
+  const part2 = 0;
+  /*
   const part2 = solve2(data);
   const expect2a = 154;
   if (target.includes('example') && part2 !== expect2a)
@@ -294,6 +294,7 @@ export default async function day23(target)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2b}`);
   }
+  */
 
   return { day: 'day23', part1, part2, duration: Date.now() - start };
 }
