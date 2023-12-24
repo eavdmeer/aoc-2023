@@ -12,14 +12,31 @@ if (process.argv[2])
     .catch(err => console.log(err.message));
 }
 
-function solve1(data, range)
+function getHailStones(data)
 {
-  const hailStones = data
+  return data
     .map(v => v.split(' @ '))
     .map(([ a, b ]) => [
       a.split(',').map(Number),
       b.split(',').map(Number)
     ]);
+}
+
+function intersect(p1x, p1y, v1x, v1y, p2x, p2y, v2x, v2y)
+{
+  const x = (v2x * (p1y * v1x - p1x * v1y - v1x * p2y) + v1x * p2x * v2y) /
+    (v1x * v2y - v1y * v2x);
+  const y = p1y + v1y * (x - p1x) / v1x;
+
+  const t1 = (x - p1x) / v1x;
+  const t2 = (x - p2x) / v2x;
+
+  return [ x, y, t1, t2 ];
+}
+
+function solve1(data, range)
+{
+  const hailStones = getHailStones(data);
 
   debug('hail stones:', hailStones);
 
@@ -40,13 +57,10 @@ function solve1(data, range)
     {
       debug('intersect', i, 'and', i + j + 1);
 
-      const x = (v2x * (p1y * v1x - p1x * v1y - v1x * p2y) + v1x * p2x * v2y) / (v1x * v2y - v1y * v2x);
-      const y = p1y + v1y * (x - p1x) / v1x;
+      const [ x, y, t1, t2 ] = intersect(p1x, p1y, v1x, v1y,
+        p2x, p2y, v2x, v2y);
 
       debug('intersection at', x, y);
-
-      const t1 = (x - p1x) / v1x;
-      const t2 = (x - p2x) / v2x;
       debug('intersection times:', t1, t2);
 
       if (t1 < 0 || t2 < 0)
@@ -73,7 +87,10 @@ function solve1(data, range)
 
 function solve2(data)
 {
-  debug('data:', data);
+  const hailStones = getHailStones(data);
+
+  debug('hail stones:', hailStones);
+
   return 0;
 }
 
@@ -108,7 +125,7 @@ export default async function day24(target)
   }
 
   const part2 = solve2(data);
-  const expect2a = 0;
+  const expect2a = 47;
   if (target.includes('example') && part2 !== expect2a)
   {
     throw new Error(`Invalid part 2 solution: ${part2}. Expecting; ${expect2a}`);
